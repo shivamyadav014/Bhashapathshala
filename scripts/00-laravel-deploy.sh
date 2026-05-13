@@ -6,6 +6,15 @@ cd /var/www/html
 echo "Installing PHP dependencies..."
 composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
+echo "Preparing writable Laravel directories..."
+mkdir -p bootstrap/cache \
+    storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/testing \
+    storage/framework/views \
+    storage/logs
+chmod -R ug+rwX bootstrap/cache storage
+
 if [ -z "${APP_KEY:-}" ]; then
     echo "APP_KEY is missing. Generating a deploy-time Laravel key..."
     touch .env
