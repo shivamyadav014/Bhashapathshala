@@ -1,0 +1,348 @@
+Warning: PowerShell detected that you might be using a screen reader and has disabled PSReadLine for compatibility purposes. If you want to re-enable it, run 'Import-Module PSReadLine'.
+
+PS C:\Users\shiva\OneDrive\Desktop\laravel prfoject> php artisan serve
+
+In ProviderRepository.php line 95:
+                                       
+  array_merge(): Argument #2 must be   
+  of type array, int given             
+                                       
+
+PS C:\Users\shiva\OneDrive\Desktop\laravel prfoject> composer dump-autoload
+Generating autoload files
+Generated autoload files
+PS C:\Users\shiva\OneDrive\Desktop\laravel prfoject> php artisan serve
+
+In ProviderRepository.php line 206:
+                                       
+  Class "App\Providers\AppServiceProv  
+  ider" not found                      
+                                       
+
+PS C:\Users\shiva\OneDrive\Desktop\laravel prfoject> 
+ *  History restored 
+
+Warning: PowerShell detected that you might be using a screen reader and has disabled PSReadLine for compatibility purposes. If you want to re-enable it, run 'Import-Module PSReadLine'.
+
+PS C:\Users\shiva\OneDrive\Desktop\laravel prfoject> php artisan migrate
+
+   WARN  The database 'language_learning_platform' does not exist on the 'mysql' connection.  
+
+  Would you like to create it? (yes/no) [yes]
+❯ php artisan db:seed
+
+   INFO  Operation cancelled. No database was created.  
+
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[HY000] [1049] Unknown database 'language_learning_platform' (Connection: mysql, SQL: select exists (select 1 from information_schema.tables where table_schema = 'language_learning_platform' and table_name = 'migrations' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED')) as `exists`)
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+    821▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    822▕                 );
+    823▕             }
+    824▕ 
+  ➜ 825▕             throw new QueryException(
+    826▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    827▕             );
+    828▕         }
+    829▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
+      PDOException::("SQLSTATE[HY000] [1049] Unknown database 'language_learning_platform'")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
+      PDO::__construct("mysql:host=127.0.0.1;port=3306;dbname=language_learning_platform", "root", Object(SensitiveParameterValue), [])
+
+PS C:\Users\shiva\OneDrive\Desktop\laravel prfoject> php artisan key:generate
+
+   INFO  Application key set successfully.  
+
+PS C:\Users\shiva\OneDrive\Desktop\laravel prfoject> php artisan serve
+
+   INFO  Server running on [http://127.0.0.1:8000].  
+
+  Press Ctrl+C to stop the server
+
+### Language Learning Platform API Tests
+### Install REST Client extension in VS Code: es-asia.rest-client
+### Then click "Send Request" above each section
+
+@baseUrl = http://127.0.0.1:8000/api
+@email = admin@languageapp.com
+@password = password123
+@token = 
+
+### ============================================
+### 1. AUTHENTICATION
+### ============================================
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "testuser@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+
+### Login (REQUIRED - Copy token from response to @token variable above)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Get current user profile
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer {{token}}
+
+### Update profile
+PUT {{baseUrl}}/auth/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Updated Name",
+  "bio": "I'm learning languages!"
+}
+
+### Logout
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{token}}
+
+### ============================================
+### 2. COURSES
+### ============================================
+
+### List all courses (public)
+GET {{baseUrl}}/courses
+
+### Get single course (public)
+GET {{baseUrl}}/courses/1
+
+### Create a course (instructor only)
+POST {{baseUrl}}/courses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "German for Beginners",
+  "language": "German",
+  "level": "beginner",
+  "description": "Learn German from scratch"
+}
+
+### Update course
+PUT {{baseUrl}}/courses/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Updated Course Title",
+  "level": "intermediate"
+}
+
+### Delete course
+DELETE {{baseUrl}}/courses/1
+Authorization: Bearer {{token}}
+
+### Enroll in a course
+POST {{baseUrl}}/courses/1/enroll
+Authorization: Bearer {{token}}
+
+### Get my enrollments
+GET {{baseUrl}}/my-enrollments
+Authorization: Bearer {{token}}
+
+### Get course progress
+GET {{baseUrl}}/courses/1/progress
+Authorization: Bearer {{token}}
+
+### ============================================
+### 3. LESSONS
+### ============================================
+
+### Get lessons for a course
+GET {{baseUrl}}/courses/1/lessons
+
+### Get single lesson
+GET {{baseUrl}}/lessons/1
+
+### Create lesson (instructor only)
+POST {{baseUrl}}/lessons
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "course_id": 1,
+  "title": "Greetings",
+  "order": 1,
+  "duration_minutes": 30,
+  "video_url": "https://example.com/video.mp4"
+}
+
+### Update lesson
+PUT {{baseUrl}}/lessons/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Updated Lesson Title",
+  "duration_minutes": 45
+}
+
+### Mark lesson as complete
+POST {{baseUrl}}/lessons/1/complete
+Authorization: Bearer {{token}}
+
+### Get lesson progress
+GET {{baseUrl}}/lessons/1/progress
+Authorization: Bearer {{token}}
+
+### Update lesson progress
+PUT {{baseUrl}}/lessons/1/progress
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "progress_percentage": 75
+}
+
+### ============================================
+### 4. EXERCISES
+### ============================================
+
+### Get exercises for a lesson
+GET {{baseUrl}}/lessons/1/exercises
+
+### Get single exercise
+GET {{baseUrl}}/exercises/1
+
+### Create exercise (instructor only)
+POST {{baseUrl}}/exercises
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "lesson_id": 1,
+  "exercise_type": "listening",
+  "content": "Listen to the audio and repeat",
+  "points": 10
+}
+
+### Submit exercise
+POST {{baseUrl}}/exercises/1/submit
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "submission_content": "Guten Tag"
+}
+
+### Get my submission
+GET {{baseUrl}}/exercises/1/my-submission
+Authorization: Bearer {{token}}
+
+### Get all submissions (instructor)
+GET {{baseUrl}}/exercises/1/submissions
+Authorization: Bearer {{token}}
+
+### Grade submission (instructor)
+POST {{baseUrl}}/exercise-submissions/1/grade
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "score": 8,
+  "feedback": "Good pronunciation!"
+}
+
+### Get exercise statistics
+GET {{baseUrl}}/exercises/1/stats
+Authorization: Bearer {{token}}
+
+### ============================================
+### 5. QUIZZES
+### ============================================
+
+### Get quizzes for a course
+GET {{baseUrl}}/courses/1/quizzes
+
+### Get single quiz
+GET {{baseUrl}}/quizzes/1
+
+### Create quiz (instructor only)
+POST {{baseUrl}}/quizzes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "course_id": 1,
+  "title": "Spanish Basics Assessment",
+  "passing_score": 70,
+  "time_limit_minutes": 30
+}
+
+### Add question to quiz (instructor)
+POST {{baseUrl}}/quizzes/1/questions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "question_type": "multiple_choice",
+  "question_text": "What is 2+2?",
+  "options": ["3", "4", "5", "6"],
+  "correct_answer": "4",
+  "points": 10
+}
+
+### Submit quiz
+POST {{baseUrl}}/quizzes/1/submit
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "answers": {
+    "1": "4",
+    "2": "true",
+    "3": "Paris"
+  }
+}
+
+### Get quiz results
+GET {{baseUrl}}/quizzes/1/results
+Authorization: Bearer {{token}}
+
+### Get quiz statistics
+GET {{baseUrl}}/quizzes/1/stats
+Authorization: Bearer {{token}}
+
+### ============================================
+### 6. PROGRESS & ANALYTICS
+### ============================================
+
+### Get user dashboard
+GET {{baseUrl}}/progress/dashboard
+Authorization: Bearer {{token}}
+
+### Get detailed course progress
+GET {{baseUrl}}/progress/courses/1
+Authorization: Bearer {{token}}
+
+### Get lesson progress
+GET {{baseUrl}}/progress/lessons/1
+Authorization: Bearer {{token}}
+
+### Get quiz attempt history
+GET {{baseUrl}}/progress/quiz-history
+Authorization: Bearer {{token}}
+
+### Get performance report
+GET {{baseUrl}}/progress/report
+Authorization: Bearer {{token}}
