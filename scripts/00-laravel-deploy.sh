@@ -17,8 +17,14 @@ chmod -R ug+rwX bootstrap/cache storage
 
 if [ -z "${APP_KEY:-}" ]; then
     echo "APP_KEY is missing. Generating a deploy-time Laravel key..."
+    GENERATED_APP_KEY="$(php artisan key:generate --show --no-interaction)"
+    export APP_KEY="${GENERATED_APP_KEY}"
     touch .env
-    php artisan key:generate --force
+    if grep -q '^APP_KEY=' .env; then
+        sed -i "s#^APP_KEY=.*#APP_KEY=${APP_KEY}#" .env
+    else
+        printf '\nAPP_KEY=%s\n' "${APP_KEY}" >> .env
+    fi
 fi
 
 echo "Preparing Laravel caches..."
