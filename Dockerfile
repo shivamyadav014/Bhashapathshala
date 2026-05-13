@@ -27,9 +27,10 @@ RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --no-
 
 COPY . .
 RUN composer dump-autoload --optimize \
+    && sed -i 's/\r$//' docker/start.sh \
     && chmod +x docker/start.sh \
     && chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
 
-CMD ["docker/start.sh"]
+CMD ["bash", "docker/start.sh"]
