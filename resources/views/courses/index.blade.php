@@ -4,6 +4,90 @@
 
 @section('extra-css')
 <style>
+    .catalog-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
+        gap: 1.25rem;
+        align-items: stretch;
+        padding: clamp(1.35rem, 4vw, 2.5rem);
+        margin-bottom: 1.25rem;
+        color: #fff;
+        background:
+            linear-gradient(135deg, rgba(22, 78, 99, .95), rgba(36, 84, 214, .9)),
+            repeating-linear-gradient(45deg, rgba(255,255,255,.13) 0 1px, transparent 1px 18px);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+    }
+
+    .catalog-hero h1 {
+        max-width: 760px;
+        font-weight: 800;
+    }
+
+    .catalog-hero p {
+        max-width: 700px;
+        color: rgba(255, 255, 255, .84);
+    }
+
+    .catalog-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    .catalog-hero-panel {
+        display: grid;
+        gap: .75rem;
+        align-content: center;
+    }
+
+    .catalog-proof {
+        padding: .85rem;
+        background: rgba(255, 255, 255, .14);
+        border: 1px solid rgba(255, 255, 255, .22);
+        border-radius: 8px;
+    }
+
+    .catalog-proof strong {
+        display: block;
+        font-size: 1.35rem;
+        line-height: 1;
+    }
+
+    .catalog-proof span {
+        color: rgba(255, 255, 255, .78);
+        font-size: .82rem;
+    }
+
+    .category-strip {
+        display: flex;
+        gap: .65rem;
+        overflow-x: auto;
+        padding: .15rem .05rem 1rem;
+        margin-bottom: .5rem;
+    }
+
+    .category-chip {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: .45rem;
+        padding: .55rem .8rem;
+        color: #344054;
+        background: rgba(255, 255, 255, .92);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-weight: 700;
+        box-shadow: 0 10px 22px rgba(24, 34, 48, .06);
+    }
+
+    .category-chip:hover,
+    .category-chip.active {
+        color: var(--primary);
+        border-color: #b8c8df;
+        background: #eaf2ff;
+    }
+
     .catalog-tools {
         display: grid;
         grid-template-columns: minmax(220px, 1fr) 180px 180px 170px;
@@ -59,6 +143,63 @@
         text-align: center;
     }
 
+    .course-card {
+        overflow: hidden;
+    }
+
+    .course-card .card-body {
+        position: relative;
+    }
+
+    .course-badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .45rem;
+        margin-bottom: .85rem;
+    }
+
+    .course-provider {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        margin-bottom: .7rem;
+        color: var(--muted);
+        font-size: .88rem;
+        font-weight: 600;
+    }
+
+    .provider-avatar {
+        display: inline-grid;
+        width: 1.8rem;
+        height: 1.8rem;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-radius: 999px;
+        font-size: .72rem;
+        font-weight: 800;
+    }
+
+    .course-rating-line {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        color: #344054;
+        font-size: .9rem;
+        font-weight: 700;
+    }
+
+    .course-rating-line i {
+        color: #f59e0b;
+    }
+
+    .course-actions {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: .6rem;
+        align-items: center;
+    }
+
     .course-fact strong {
         display: block;
         font-size: .92rem;
@@ -71,6 +212,10 @@
     }
 
     @media (max-width: 991.98px) {
+        .catalog-hero {
+            grid-template-columns: 1fr;
+        }
+
         .catalog-tools {
             grid-template-columns: 1fr 1fr;
         }
@@ -92,18 +237,51 @@
 @php
     $languages = $courses->pluck('language')->filter()->unique()->sort()->values();
     $levels = $courses->pluck('level')->filter()->unique()->sort()->values();
+    $lessonTotal = $courses->sum(fn ($course) => (int) ($course->published_lessons_count ?? 0));
+    $quizTotal = $courses->sum(fn ($course) => (int) ($course->published_quizzes_count ?? 0));
+    $topLanguages = $languages->take(6);
 @endphp
 
-<div class="section-title">
+<section class="catalog-hero">
     <div>
-        <span class="badge badge-soft mb-2">Course catalog</span>
-        <h1 class="h3 mb-1">All courses</h1>
-        <p class="text-muted mb-0">Search, filter, and pick the right BhashaPathshala path.</p>
+        <span class="badge bg-light text-primary mb-3">LinguaLift catalog</span>
+        <h1 class="display-6 mb-3">Build language skills with guided courses, practice, and progress tracking.</h1>
+        <p class="mb-4">Explore structured paths by language and level, then continue with lessons, quizzes, and performance feedback from your learner dashboard.</p>
+        <div class="catalog-hero-actions">
+            <a href="#course-grid" class="btn btn-light"><i class="fas fa-compass me-2"></i>Explore courses</a>
+            @guest
+                <a href="{{ route('register') }}" class="btn btn-outline-light"><i class="fas fa-user-plus me-2"></i>Join free</a>
+            @endguest
+        </div>
     </div>
-    @guest
-        <a href="{{ route('register') }}" class="btn btn-primary"><i class="fas fa-user-plus me-2"></i>Join free</a>
-    @endguest
-</div>
+    <div class="catalog-hero-panel">
+        <div class="catalog-proof">
+            <strong>{{ $courses->count() }}</strong>
+            <span>published courses</span>
+        </div>
+        <div class="catalog-proof">
+            <strong>{{ $lessonTotal }}</strong>
+            <span>guided lessons</span>
+        </div>
+        <div class="catalog-proof">
+            <strong>{{ $quizTotal }}</strong>
+            <span>knowledge checks</span>
+        </div>
+    </div>
+</section>
+
+@if($topLanguages->isNotEmpty())
+    <div class="category-strip" aria-label="Popular language filters">
+        <button type="button" class="category-chip active" data-language-chip="">
+            <i class="fas fa-border-all"></i>All
+        </button>
+        @foreach($topLanguages as $language)
+            <button type="button" class="category-chip" data-language-chip="{{ strtolower($language) }}">
+                <i class="fas fa-language"></i>{{ $language }}
+            </button>
+        @endforeach
+    </div>
+@endif
 
 <div class="catalog-tools" aria-label="Course filters">
     <div class="catalog-search">
@@ -159,15 +337,22 @@
                     <i class="fas fa-language"></i>
                 </div>
                 <div class="card-body d-flex flex-column">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
+                    <div class="course-badge-row">
                         <span class="meta-pill"><i class="fas fa-language"></i>{{ $course->language }}</span>
-                        <span class="meta-pill"><i class="fas fa-signal"></i>{{ $course->level }}</span>
+                        <span class="meta-pill"><i class="fas fa-signal"></i>{{ ucfirst($course->level) }}</span>
                     </div>
                     <h2 class="h5 card-title mb-2">{{ $course->title }}</h2>
-                    <div class="small text-muted mb-2">
-                        <i class="fas fa-chalkboard-user me-1"></i>{{ $course->instructor->name ?? 'Instructor coming soon' }}
+                    <div class="course-provider">
+                        <span class="provider-avatar">{{ strtoupper(substr($course->instructor->name ?? 'LL', 0, 1)) }}</span>
+                        <span>{{ $course->instructor->name ?? 'LinguaLift instructor' }}</span>
                     </div>
                     <p class="card-text small text-muted flex-grow-1">{{ \Illuminate\Support\Str::limit($course->description, 110) }}</p>
+
+                    <div class="course-rating-line mb-2">
+                        <i class="fas fa-star"></i>
+                        <span>{{ number_format((float) $course->rating, 1) }}</span>
+                        <span class="text-muted fw-semibold">course rating</span>
+                    </div>
 
                     <div class="course-facts">
                         <div class="course-fact">
@@ -184,7 +369,10 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('courses.show', $course) }}" class="btn btn-outline-primary w-100 mt-auto">Open course</a>
+                    <div class="course-actions mt-auto">
+                        <a href="{{ route('courses.show', $course) }}" class="btn btn-primary">View course</a>
+                        <span class="small text-muted"><i class="fas fa-certificate me-1"></i>Trackable</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -212,6 +400,7 @@
         const count = document.getElementById('course-result-count');
         const empty = document.getElementById('no-course-results');
         const reset = document.getElementById('reset-course-filters');
+        const chips = Array.from(document.querySelectorAll('[data-language-chip]'));
 
         const applyFilters = () => {
             const query = search.value.trim().toLowerCase();
@@ -233,6 +422,7 @@
 
             count.textContent = visible;
             empty.classList.toggle('d-none', visible !== 0);
+            chips.forEach((chip) => chip.classList.toggle('active', chip.dataset.languageChip === selectedLanguage));
         };
 
         const applySort = () => {
@@ -268,6 +458,13 @@
             sort.value = 'title';
             applySort();
             applyFilters();
+        });
+
+        chips.forEach((chip) => {
+            chip.addEventListener('click', () => {
+                language.value = chip.dataset.languageChip;
+                applyFilters();
+            });
         });
     });
 </script>

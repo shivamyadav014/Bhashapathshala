@@ -1,4 +1,4 @@
-# BhashaPathshala
+# LinguaLift
 
 An online learning platform for language education featuring courses, exercises, quizzes, progress tracking, and performance feedback.
 

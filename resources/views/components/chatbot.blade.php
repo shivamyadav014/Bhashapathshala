@@ -4,7 +4,7 @@
             <span class="chatbot-avatar"><i class="fas fa-comments"></i></span>
             <div>
                 <h3>Bhasha Bot</h3>
-                <p>BhashaPathshala course guide</p>
+                <p>LinguaLift course guide</p>
             </div>
         </div>
         <div class="chatbot-header-actions">
