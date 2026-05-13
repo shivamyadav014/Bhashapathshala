@@ -37,6 +37,17 @@ config/                # Configuration files
 5. Seed database: `php artisan db:seed`
 6. Start the server: `php artisan serve`
 
+## Render Deployment
+
+This repository includes a Dockerfile and `render.yaml` blueprint for Render.
+
+1. In Render, create a new Blueprint from this GitHub repository.
+2. Set `APP_KEY` to the output of `php artisan key:generate --show`.
+3. After the first deploy, set `APP_URL` to the Render service URL.
+4. Keep `RUN_SEEDERS=false` for production. Set it to `true` only when you intentionally want to load demo data.
+
+The blueprint creates a Docker web service and a free Render PostgreSQL database. The container runs `php artisan migrate --force` before Apache starts.
+
 ## Database Schema
 
 ## User Roles
@@ -123,7 +134,7 @@ config/                # Configuration files
 ## Technologies Used
 
 - Laravel 11
-- MySQL
+- PostgreSQL on Render, SQLite locally
 - PHP 8.1+
 - Sanctum for API Authentication
 
